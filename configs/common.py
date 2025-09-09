@@ -220,8 +220,8 @@ class MotorSystemConfig:
 
 def make_eval_motor_config(
     good_view_percentage: float = 0.5,
-    desired_object_distance: float = 0.10,
-    use_goal_state_driven_actions: bool = False,
+    desired_object_distance: float = 0.05,
+    use_goal_state_driven_actions: bool = True,
 ) -> object:
     """Create a motor system config for evaluation experiments."""
     policy_class = InformedPolicy
@@ -266,9 +266,7 @@ class MountConfig:
     )
     height: float = 0.0
     position: list[float] = field(default_factory=lambda: [0.0, 1.5, 0.5])
-    resolutions: list[list[int]] = field(
-        default_factory=lambda: [[64, 64], [64, 64]]
-    )
+    resolutions: list[list[int]] = field(default_factory=lambda: [[64, 64], [128, 128]])
     positions: list[list[float]] = field(
         default_factory=lambda: [[0.0, 0.0, 0.0], [0.0, 0.0, 0.0]]
     )
@@ -374,8 +372,9 @@ class EvalLoggingConfig(ParallelEvidenceLMLoggingConfig):
             BasicCSVStatsHandler,
         ]
     )
-    wandb_group: str = "gss"
-    wandb_handlers: list = field(default_factory=list)
+
+    # wandb_handlers: list = field(default_factory=list)
+    wandb_group: str = "salience_showdown"
     monty_log_level: str = "BASIC"
 
 
