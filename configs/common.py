@@ -154,7 +154,7 @@ def make_eval_lm_config(gsg_enabled: bool = True) -> dict[str, str]:
 
 def make_eval_patch_config() -> dict[str, str]:
     """Create a sensor module config for evaluation experiments.
-    
+
     This effectively returns the default LM config used in benchmark experiments.
     Its parameters are written out completely here (it's easier to view them this way).
     Modify this function to allow for parameter overrides.
@@ -187,10 +187,11 @@ def make_eval_patch_config() -> dict[str, str]:
         ),
     )
 
+
 def make_view_finder_config(
     gsg_class: type | None = None,
     gsg_args: dict | None = None,
-    ) -> dict[str, str]:
+) -> dict[str, str]:
     """Create a sensor module config for a view-finder with an optional GSG."""
     if gsg_args is not None:
         gsg_args = copy.deepcopy(gsg_args)
@@ -211,6 +212,7 @@ def make_view_finder_config(
 Motor System and Policy Configs
 --------------------------------------------------------------------------------
 """
+
 
 @dataclass
 class MotorSystemConfig:
@@ -244,10 +246,9 @@ def make_eval_motor_config(
         motor_system_args=dict(
             policy_class=policy_class,
             policy_args=policy_args,
-        )
+        ),
     )
     return motor_system_config
-
 
 
 """
@@ -261,9 +262,7 @@ class MountConfig:
     """Patch and view-finder mount config with custom defaults."""
 
     agent_id: str = "agent_id_0"
-    sensor_ids: list[str] = field(
-        default_factory=lambda: ["patch", "view_finder"]
-    )
+    sensor_ids: list[str] = field(default_factory=lambda: ["patch", "view_finder"])
     height: float = 0.0
     position: list[float] = field(default_factory=lambda: [0.0, 1.5, 0.5])
     resolutions: list[list[int]] = field(default_factory=lambda: [[64, 64], [128, 128]])
@@ -273,18 +272,14 @@ class MountConfig:
     rotations: list[list[float]] = field(
         default_factory=lambda: [[1.0, 0.0, 0.0, 0.0], [1.0, 0.0, 0.0, 0.0]]
     )
-    semantics: list[bool] = field(
-        default_factory=lambda: [False, False]
-    )
+    semantics: list[bool] = field(default_factory=lambda: [False, False])
     zooms: list[float] = field(default_factory=lambda: [10.0, 1.0])
 
 
 @dataclass
 class EnvInitArgs:
     agents: List[AgentConfig] = field(
-        default_factory=lambda: [
-            AgentConfig(MultiSensorAgent, MountConfig())
-        ]
+        default_factory=lambda: [AgentConfig(MultiSensorAgent, MountConfig())]
     )
     objects: List[ObjectConfig] = field(default_factory=list)
     scene_id: int | None = field(default=None)
@@ -319,9 +314,7 @@ def make_dataset_args(
     dataset: str = "ycb",
     agent_position: list[float] | None = None,
     view_finder_resolution: list[int] | None = None,
-    ) -> DatasetArgs:
-
-
+) -> DatasetArgs:
     if dataset == "ycb":
         data_path = MONTY_DATA_DIR / "habitat" / "objects" / "ycb"
     else:
@@ -329,7 +322,7 @@ def make_dataset_args(
 
     env_init_args = EnvInitArgs(data_path=str(data_path))
     dataset_args = DatasetArgs(env_init_args=env_init_args)
-    
+
     if agent_position is not None:
         env_init_args.agents[0].agent_args.position = agent_position
     if view_finder_resolution is not None:
@@ -342,8 +335,7 @@ def make_dataloader_args(
     names: list[str],
     positions: list[list[float]] | None = None,
     rotations: list[list[float]] | None = None,
-    ) -> EnvironmentDataloaderPerObjectArgs:
-
+) -> EnvironmentDataloaderPerObjectArgs:
     return EnvironmentDataloaderPerObjectArgs(
         object_names=names,
         object_init_sampler=PredefinedObjectInitializer(
@@ -357,6 +349,7 @@ def make_dataloader_args(
 Logging
 --------------------------------------------------------------------------------
 """
+
 
 @dataclass
 class EvalLoggingConfig(ParallelEvidenceLMLoggingConfig):
@@ -406,16 +399,18 @@ def enable_telemetry(config: dict) -> None:
 
     Configures selective logger to save only SM data, and only a subset
     of its raw observations.
-    
+
     Args:
         config: The config to set.
     """
-    
+
     config["logging_config"] = SelectiveLoggingConfig(
         run_name=config["logging_config"].run_name,
         selective_handler_args={
             "exclude": ["LM_0"],
-            "filters": [RawObservationsFilter(include=["rgba", "depth", "semantic_3d"])],
+            "filters": [
+                RawObservationsFilter(include=["rgba", "depth", "semantic_3d"])
+            ],
         },
     )
     # sensor module detailed logging and telemetry
@@ -428,7 +423,7 @@ def enable_telemetry(config: dict) -> None:
             gsg_args = sm_args.get("gsg_args", {})
             gsg_args["save_telemetry"] = True
             sm_args["gsg_args"] = gsg_args
-    
+
     # motor system telemetry
     motor_system_config = config["monty_config"].motor_system_config
     motor_system_config.motor_system_args["save_telemetry"] = True
@@ -438,6 +433,7 @@ def enable_telemetry(config: dict) -> None:
 etc.
 --------------------------------------------------------------------------------
 """
+
 
 def set_view_finder_gsg(
     config: dict,
@@ -454,4 +450,3 @@ def set_view_finder_gsg(
     sm_args = sm_config["sensor_module_args"]
     sm_args["gsg_class"] = gsg_class
     sm_args["gsg_args"] = gsg_args
-
