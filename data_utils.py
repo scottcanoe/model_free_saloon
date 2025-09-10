@@ -101,8 +101,9 @@ def load_eval_stats(exp: os.PathLike) -> pd.DataFrame:
 
         # Remove the outer brackets and parentheses. If it doesn't have
         # brackets or parentheses, it's not an array, so just return it as-is.
-        if (s.startswith("[") and s.endswith("]")) or \
-            (s.startswith("(") and s.endswith(")")):
+        if (s.startswith("[") and s.endswith("]")) or (
+            s.startswith("(") and s.endswith(")")
+        ):
             s = s[1:-1]
         else:
             return s
@@ -270,7 +271,6 @@ class DetailedJSONStatsInterface:
         self._path = path
         self._index = None  # Just used to convert possibly negative indices
 
-
     @property
     def path(self) -> Path:
         return self._path
@@ -313,14 +313,15 @@ class DetailedJSONStatsInterface:
         return self.read_episode(episode)
 
 
-
 def extract_raw(stats: dict, sm_id: str, array_name: str) -> np.ndarray:
     raw_observations = stats[sm_id]["raw_observations"]
     return np.stack([np.array(dct[array_name]) for dct in raw_observations])
 
+
 def extract_gsg_telemetry(stats: dict, sm_id: str) -> np.ndarray:
     telemetry = stats[sm_id]["gsg_telemetry"]
     return telemetry
+
 
 def load_actions(exp: os.PathLike, episode: int) -> list[dict]:
     exp_dir = RESULTS_DIR / exp
@@ -333,7 +334,9 @@ def load_actions(exp: os.PathLike, episode: int) -> list[dict]:
     return lines
 
 
-def extract_sensor_pose(stats: dict, sm_id: str) -> tuple[list[np.ndarray], list[np.ndarray]]:
+def extract_sensor_pose(
+    stats: dict, sm_id: str
+) -> tuple[list[np.ndarray], list[np.ndarray]]:
     sm_properties = stats[sm_id]["sm_properties"]
     rotations = [dct["sm_rotation"] for dct in sm_properties]
     positions = [dct["sm_location"] for dct in sm_properties]

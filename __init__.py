@@ -18,6 +18,7 @@ PROJECT_ROOT = Path(__file__).parent
 
 MONTY_MODELS = Path.home() / "tbp/results/monty/pretrained_models/pretrained_ycb_v10"
 
+
 @dataclass
 class ProjectPaths:
     root: Path = PROJECT_ROOT
@@ -31,13 +32,10 @@ class Project:
     """
     A project is a collection of related experiments.
     """
-    
+
     def __init__(self):
         self.name = PROJECT_NAME
         self.paths = OmegaConf.structured(ProjectPaths())
 
 
 project = Project()
-
-
-

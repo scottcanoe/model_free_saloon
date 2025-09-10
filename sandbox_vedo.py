@@ -31,7 +31,7 @@ OBJECT_DATASET_DIRS = {
 def as_scipy_rotation(
     obj: quaternion.quaternion | ArrayLike | ScipyRotation,
     **kwargs,
-    ) -> ScipyRotation:
+) -> ScipyRotation:
     """Convert a rotation description to a rotation matrix.
 
     Args:
@@ -45,17 +45,17 @@ def as_scipy_rotation(
               to be in degrees. Supply `degrees=False` for radians.
               be in degrees. Supply `degrees=False` to override.
             - 3x3 rotation matrix.
-            
+
     Returns:
         A scipy.spatial.transform.Rotation instance.
     """
-        
+
     if isinstance(obj, ScipyRotation):
         return obj
 
     if isinstance(obj, quaternion.quaternion):
         return ScipyRotation.from_quat([obj.x, obj.y, obj.z, obj.w])
-    
+
     arr = np.array(obj)
 
     if arr.shape == (4,):
@@ -75,36 +75,36 @@ def as_scipy_rotation(
 
 
 def load_mesh(object_name: str, dataset: str = "ycb") -> Mesh:
-        """Reads a 3D object file in glb format and returns a Vedo Mesh object.
+    """Reads a 3D object file in glb format and returns a Vedo Mesh object.
 
-        Args:
-            obj_name: Name of the object to load.
+    Args:
+        obj_name: Name of the object to load.
 
-        Returns:
-            vedo.Mesh object with UV texture and transformed orientation.
-        """
-        dataset_dir = OBJECT_DATASET_DIRS[dataset]
-        ds = HabitatDataset(dataset_dir)
-        cfg = ds.load_config(object_name)
-        mesh_path = cfg.attrs.render_asset
-        if dataset == "ycb":
-            mesh_path = mesh_path.parent / "textured.glb.orig"
-        
-        trimesh_scene = trimesh.load(mesh_path, file_type="glb")
-        trimesh_mesh = list(trimesh_scene.geometry.values())[0]
-        vertices = trimesh_mesh.vertices
-        faces = trimesh_mesh.faces
-        
-        mesh = Mesh([vertices, faces])
-        mesh.texture(
-            tname=np.array(trimesh_mesh.visual.material.baseColorTexture),
-            tcoords=trimesh_mesh.visual.uv,
-        )
+    Returns:
+        vedo.Mesh object with UV texture and transformed orientation.
+    """
+    dataset_dir = OBJECT_DATASET_DIRS[dataset]
+    ds = HabitatDataset(dataset_dir)
+    cfg = ds.load_config(object_name)
+    mesh_path = cfg.attrs.render_asset
+    if dataset == "ycb":
+        mesh_path = mesh_path.parent / "textured.glb.orig"
 
-        mesh.shift(-np.mean(mesh.bounds().reshape(3, 2), axis=1))
-        if dataset == "ycb":
-            mesh.rotate_x(-90)
-        return mesh
+    trimesh_scene = trimesh.load(mesh_path, file_type="glb")
+    trimesh_mesh = list(trimesh_scene.geometry.values())[0]
+    vertices = trimesh_mesh.vertices
+    faces = trimesh_mesh.faces
+
+    mesh = Mesh([vertices, faces])
+    mesh.texture(
+        tname=np.array(trimesh_mesh.visual.material.baseColorTexture),
+        tcoords=trimesh_mesh.visual.uv,
+    )
+
+    mesh.shift(-np.mean(mesh.bounds().reshape(3, 2), axis=1))
+    if dataset == "ycb":
+        mesh.rotate_x(-90)
+    return mesh
 
 
 def mesh_rotate(mesh: Mesh, rotation: RotationLike, **kwargs) -> Mesh:
@@ -117,33 +117,38 @@ def mesh_rotate(mesh: Mesh, rotation: RotationLike, **kwargs) -> Mesh:
     mesh.rotate(angle, axis, rad=True)
     return mesh
 
+
 def mesh_translate(mesh: Mesh, position: ArrayLike) -> Mesh:
     mesh.shift(position)
     return mesh
+
 
 def mesh_set_pose(
     mesh: Mesh,
     rotation: ArrayLike | None = None,
     position: ArrayLike | None = None,
-    ) -> Mesh:
+) -> Mesh:
     if rotation is not None:
         mesh = mesh_rotate(mesh, rotation)
     if position is not None:
         mesh = mesh_translate(mesh, position)
     return mesh
 
+
 def center_val(arr: np.ndarray) -> np.generic:
     row_mid, col_mid = arr.shape[0] // 2, arr.shape[1] // 2
     return arr[row_mid, col_mid]
 
+
 def extract(list_of_dicts: list[dict], key: str) -> np.ndarray:
     return np.array([dct[key] for dct in list_of_dicts])
+
 
 def extract_centers(data: list[np.ndarray]) -> np.ndarray:
     return np.array([center_val(arr) for arr in data])
 
+
 def extract_observations(sm_stats: dict) -> dict[str, list[np.ndarray]]:
-    
     raw_observations = sm_stats["raw_observations"]
     rgba = [np.array(dct["rgba"]) for dct in raw_observations]
     depth = [np.array(dct["depth"]) for dct in raw_observations]
@@ -173,7 +178,7 @@ class DataSource:
     def __init__(self, exp_dir: os.PathLike, episode: int = 0):
         self._exp_dir = Path(exp_dir).expanduser()
         self._stats_path = self._exp_dir / "detailed_run_stats.json"
-        
+
         self._episode = episode
 
         self.stats = {}
@@ -183,13 +188,12 @@ class DataSource:
         self.n_steps = 0
 
         self.set_episode(episode)
-        
+
     @property
     def episode(self) -> int | None:
         return self._episode
 
     def set_episode(self, episode: int) -> None:
-
         self.stats = load_detailed_stats(self._stats_path, episode)
         self._episode = episode
 
@@ -201,18 +205,17 @@ class DataSource:
         }
         angles = target_info["primary_target_rotation_euler"]
         self.target["rotation"] = as_scipy_rotation(angles, degrees=True)
-        
+
         # patch sensor
         sm_stats = self.stats["SM_0"]
         self.patch = {}
         self.patch["observations"] = extract_observations(sm_stats)
-        
+
         # - view-finder
         sm_stats = self.stats["SM_1"]
         self.view_finder = {}
         self.view_finder["observations"] = extract_observations(sm_stats)
-        
-        
+
         # - gsg
         self.gsg = sm_stats["gsg_telemetry"]
 
@@ -221,14 +224,12 @@ class DataSource:
         self.n_steps = len(self.view_finder["observations"]["rgba"])
 
 
-
 class InteractivePlotter:
     def __init__(self, ds: DataSource):
         self.ds = ds
         self.step = 0
         self.plotter = Plotter(shape=(1, 1))
         self.plotter.add_callback("key_press", self.on_key_press)
-
 
         self.target_mesh = load_mesh(self.ds.target["object"], dataset="ycb")
         self.target_mesh = mesh_set_pose(
@@ -245,14 +246,12 @@ class InteractivePlotter:
             clipping_range=(0.307518, 0.557784),
         )
 
-
         self.goals = None
         self.best_goal = None
         self.selected_goal = None
 
         self.view_finder_center = None
         self.patch_center = None
-
 
         self.plotter.show(
             self.target_mesh,
@@ -263,22 +262,18 @@ class InteractivePlotter:
         )
         self.set_step(0)
 
-
     def set_step(self, step: int):
-
         if step < 0 or step >= self.ds.n_steps:
             return
-        
+
         print(f"Setting step to {step}")
         self.step = step
-        
+
         self.update_goals()
 
         self.plotter.interactive = True
 
-    
     def update_goals(self):
-
         if self.goals is not None:
             self.plotter.remove(self.goals)
         if self.best_goal is not None:
@@ -302,12 +297,11 @@ class InteractivePlotter:
             locations = [locations[i] for i in inds]
             confidences = [confidences[i] for i in inds]
             if np.isclose(confidences[0], confidences[1]):
-                print('Two goals with the same confidence')
+                print("Two goals with the same confidence")
             best_location = locations[0]
-        self.best_goal = Sphere(best_location, r=.01, c="black", alpha=0.3)
+        self.best_goal = Sphere(best_location, r=0.01, c="black", alpha=0.3)
 
         self.plotter.show(self.goals, self.best_goal, interactive=True)
-
 
     def on_key_press(self, event):
         if event.keypress == "b":
