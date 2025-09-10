@@ -28,6 +28,7 @@ from tbp.monty.frameworks.models.evidence_matching.model import (
 )
 from tbp.monty.frameworks.models.sm_goal_state_generation import (
     OnObjectGsg,
+    OnObjectGsgBio,
     OnObjectGsgMinimumBarrier,
     OnObjectGsgRobustBackground,
     OnObjectGsgSpectralResidual,
@@ -146,7 +147,7 @@ ycb_std = dict(
     dataset_args=make_dataset_args("ycb"),
     eval_dataloader_class=ED.InformedEnvironmentDataLoader,
     eval_dataloader_args=make_dataloader_args(
-        ["strawberry"],
+        ["potted_meat_can"],
         [[0.0, 1.5, 0.0]],
         [[0, 0, 0]],
     ),
@@ -177,6 +178,11 @@ ycb_robust_background = copy.deepcopy(ycb_std)
 ycb_robust_background["logging_config"].run_name = "ycb_robust_background"
 set_view_finder_gsg(ycb_robust_background, OnObjectGsgRobustBackground)
 CONFIGS["ycb_robust_background"] = ycb_robust_background
+
+ycb_bio = copy.deepcopy(ycb_std)
+ycb_bio["logging_config"].run_name = "ycb_bio"
+set_view_finder_gsg(ycb_bio, OnObjectGsgBio)
+CONFIGS["ycb_bio"] = ycb_bio
 
 
 snapshots = copy.deepcopy(baseline)

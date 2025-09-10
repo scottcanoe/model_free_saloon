@@ -100,7 +100,7 @@ def make_gifs(exp_dir: Path):
 
 
 if __name__ == "__main__":
-    experiment = "ycb_uniform"
+    experiment = "ycb_bio"
 
     config = load_config(experiment)
     enable_telemetry(config)

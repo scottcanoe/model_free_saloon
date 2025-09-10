@@ -310,7 +310,7 @@ class InteractivePlotter:
             self.set_step(self.step - 1)
 
 
-exp_dir = project.paths.results / "ycb_uniform"
+exp_dir = project.paths.results / "ycb_bio"
 ds = DataSource(exp_dir)
 p = InteractivePlotter(ds)
 
@@ -319,3 +319,6 @@ patch_on_obj = extract_centers(ds.patch["observations"]["surface"])
 viewfinder_on_obj = extract_centers(ds.view_finder["observations"]["surface"])
 df = pd.DataFrame(dict(patch=patch_on_obj, viewfinder=viewfinder_on_obj))
 print(df)
+n_steps = len(df)
+n_off = np.sum(df["patch"] == 0)
+print(f"Number of steps off object: {n_off} / {n_steps}")

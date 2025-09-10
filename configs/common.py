@@ -222,7 +222,7 @@ class MotorSystemConfig:
 
 def make_eval_motor_config(
     good_view_percentage: float = 0.5,
-    desired_object_distance: float = 0.05,
+    desired_object_distance: float = 0.1,
     use_goal_state_driven_actions: bool = True,
 ) -> object:
     """Create a motor system config for evaluation experiments."""
