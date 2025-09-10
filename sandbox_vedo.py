@@ -310,7 +310,7 @@ class InteractivePlotter:
             self.set_step(self.step - 1)
 
 
-exp_dir = project.paths.results / "ycb_dev"
+exp_dir = project.paths.results / "ycb_uniform"
 ds = DataSource(exp_dir)
 p = InteractivePlotter(ds)
 
