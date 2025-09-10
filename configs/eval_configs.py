@@ -26,7 +26,13 @@ from tbp.monty.frameworks.experiments import MontyObjectRecognitionExperiment
 from tbp.monty.frameworks.models.evidence_matching.model import (
     MontyForEvidenceGraphMatching,
 )
-from tbp.monty.frameworks.models.sm_goal_state_generation import OnObjectGsg, OnObjectGsgUniform, OnObjectGsgSpectralResidual, OnObjectGsgMinimumBarrier, OnObjectGsgRobustBackground
+from tbp.monty.frameworks.models.sm_goal_state_generation import (
+    OnObjectGsg,
+    OnObjectGsgMinimumBarrier,
+    OnObjectGsgRobustBackground,
+    OnObjectGsgSpectralResidual,
+    OnObjectGsgUniform,
+)
 
 from .common import (
     PRETRAINED_MODEL,
@@ -177,5 +183,5 @@ snapshots = copy.deepcopy(baseline)
 snapshots["experiment_args"].max_total_steps = 1
 snapshots["experiment_args"].max_eval_steps = 1
 snapshots["logging_config"].run_name = "snapshots"
-set_view_finder_gsg(baseline_dev, OnObjectGsg)
+set_view_finder_gsg(snapshots, OnObjectGsg)
 CONFIGS["snapshots"] = snapshots
