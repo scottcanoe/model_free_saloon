@@ -26,14 +26,16 @@ def center_val(arr: np.ndarray) -> np.generic:
     row_mid, col_mid = arr.shape[0] // 2, arr.shape[1] // 2
     return arr[row_mid, col_mid]
 
+
 def extract(list_of_dicts: list[dict], key: str) -> np.ndarray:
     return np.array([dct[key] for dct in list_of_dicts])
+
 
 def extract_centers(data: list[np.ndarray]) -> np.ndarray:
     return np.array([center_val(arr) for arr in data])
 
+
 def extract_observations(sm_stats: dict) -> dict[str, list[np.ndarray]]:
-    
     raw_observations = sm_stats["raw_observations"]
     rgba = [np.array(dct["rgba"]) for dct in raw_observations]
     depth = [np.array(dct["depth"]) for dct in raw_observations]
@@ -63,7 +65,7 @@ class DataSource:
     def __init__(self, exp_dir: os.PathLike, episode: int = 0):
         self._exp_dir = Path(exp_dir).expanduser()
         self._stats_path = self._exp_dir / "detailed_run_stats.json"
-        
+
         self._episode = episode
 
         self.stats = {}
@@ -73,13 +75,12 @@ class DataSource:
         self.n_steps = 0
 
         self.set_episode(episode)
-        
+
     @property
     def episode(self) -> int | None:
         return self._episode
 
     def set_episode(self, episode: int) -> None:
-
         self.stats = load_detailed_stats(self._stats_path, episode)
         self._episode = episode
 
@@ -91,26 +92,23 @@ class DataSource:
         }
         angles = target_info["primary_target_rotation_euler"]
         self.target["rotation"] = as_scipy_rotation(angles, degrees=True)
-        
+
         # patch sensor
         sm_stats = self.stats["SM_0"]
         self.patch = {}
         self.patch["observations"] = extract_observations(sm_stats)
-        
+
         # - view-finder
         sm_stats = self.stats["SM_1"]
         self.view_finder = {}
         self.view_finder["observations"] = extract_observations(sm_stats)
-        
-        
+
         # - gsg
         self.gsg = sm_stats["gsg_telemetry"]
 
         # - motor system
 
         self.n_steps = len(self.view_finder["observations"]["rgba"])
-
-
 
 
 exp_dir = project.paths.results / "snapshots"
@@ -124,10 +122,7 @@ for episode in range(10):
     on_obj = depth < 1.0
     print(f"min_depth: {np.min(depth)}")
     perc = on_obj.sum() / on_obj.size
-    print(f"perc: {100*perc:.2f}%")
-
-    
+    print(f"perc: {100 * perc:.2f}%")
 
     plt.imshow(rgba)
     plt.show()
-

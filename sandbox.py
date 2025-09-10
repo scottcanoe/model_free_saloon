@@ -65,7 +65,6 @@ def grid_raw_observation(raw_observation: dict) -> dict[str, np.ndarray]:
     }
 
 
-
 exp_dir = project.paths.results / "ycb_dev"
 all_stats = DetailedJSONStatsInterface(exp_dir / "detailed_run_stats.json")
 stats = all_stats[0]

@@ -15,16 +15,19 @@ from omegaconf import OmegaConf
 
 ROOT = Path(__file__).parent
 
-paths = OmegaConf.create({
-    "root": ROOT,
-    "configs": ROOT / "configs",
-    "data": ROOT / "data",
-    "results": ROOT / "results",
-})
+paths = OmegaConf.create(
+    {
+        "root": ROOT,
+        "configs": ROOT / "configs",
+        "data": ROOT / "data",
+        "results": ROOT / "results",
+    }
+)
 
 
 def load_config(experiment_name: str) -> dict:
     from configs import CONFIGS
+
     return CONFIGS[experiment_name]
 
 
@@ -48,6 +51,6 @@ def run_config(
     exp_dir = output_dir / run_name
     if clean and exp_dir.exists():
         shutil.rmtree(exp_dir)
-    
+
     name = name or run_name
     main(all_configs={name: config}, experiments=[name])
