@@ -7,6 +7,8 @@
 # license that can be found in the LICENSE file or at
 # https://opensource.org/licenses/MIT.
 from .eval_configs import CONFIGS as EVAL_CONFIGS
+from .pretrain_configs import CONFIGS as PRETRAIN_CONFIGS
 
 CONFIGS = {}
 CONFIGS.update(EVAL_CONFIGS)
+CONFIGS.update(PRETRAIN_CONFIGS)

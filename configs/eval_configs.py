@@ -147,7 +147,7 @@ ycb_std = dict(
     dataset_args=make_dataset_args("ycb"),
     eval_dataloader_class=ED.InformedEnvironmentDataLoader,
     eval_dataloader_args=make_dataloader_args(
-        ["potted_meat_can"],
+        ["bowl"],
         [[0.0, 1.5, 0.0]],
         [[0, 0, 0]],
     ),

@@ -263,7 +263,7 @@ def visualize_all(
     summarize_maps_stats(maps, order=order)
 
 
-object_name = "strawberry"
+object_name = "bowl"
 obs = load_obs(object_name)
 rgba = obs["rgba"]
 depth = obs["depth"]
