@@ -64,8 +64,10 @@ from .selective_logging import RawObservationsFilter, SelectiveHandler
 MONTY_DATA_DIR = Path(os.environ.get("MONTY_DATA", "~/tbp/data")).expanduser()
 PRETRAIN_DIR = project.paths.pretrained_models
 PRETRAINED_MODEL = str(Path(PRETRAIN_DIR) / "surf_agent_1lm_77obj" / "pretrained")
-BIO_PRETRAINED_MODEL = str(Path(PRETRAIN_DIR) / "pretrain_bio" / "pretrained")
-STANDARD_PRETRAINED_MODEL = str(Path(PRETRAIN_DIR) / "pretrain_standard" / "pretrained")
+
+MODEL_FREE_SALOON_DIR = Path("~/tbp/model_free_saloon").expanduser()
+BIO_PRETRAINED_MODEL = str(Path(MODEL_FREE_SALOON_DIR / "results" / "pretrain_bio" / "pretrained"))
+STANDARD_PRETRAINED_MODEL = str(Path(MODEL_FREE_SALOON_DIR / "results" / "pretrain_standard" / "pretrained"))
 RESULTS_DIR = project.paths.results
 
 # - Evaluation Parameters
