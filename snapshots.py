@@ -29,6 +29,10 @@ from model_free_saloon import project
 
 SNAPSHOT_DIR = project.paths.data / "snapshots"
 
+OBJECTS_WITH_LOGOS = [
+    "002_cube_tbp_horz",
+    "017_sphere_tbp_horz",
+]
 
 def load_detailed_stats(path: os.PathLike, episode: int) -> dict:
     with open(path, "r") as f:
@@ -53,6 +57,39 @@ def save_snapshots():
         print(f"perc: {100 * perc:.2f}%")
 
         object_name = DISTINCT_OBJECTS[episode]
+        obj_dir = SNAPSHOT_DIR / object_name
+        obj_dir.mkdir(parents=True, exist_ok=True)
+
+        np.save(obj_dir / "rgba.npy", rgba)
+        np.save(obj_dir / "depth.npy", depth)
+
+        fig, axes = plt.subplots(1, 2, figsize=(10, 5))
+        axes[0].imshow(rgba)
+        on_obj_depth = depth[on_obj]
+        vmin = np.min(on_obj_depth) * 0.9
+        vmax = np.max(on_obj_depth) * 1.1
+        axes[1].imshow(depth, vmin=vmin, vmax=vmax, cmap="gray")
+        for ax in axes:
+            ax.axis("off")
+        fig.savefig(obj_dir / "plot.png")
+        plt.close()
+
+
+def save_snapshots_compositional():
+    exp_dir = project.paths.results / "snapshots_compositional"
+    json_path = exp_dir / "detailed_run_stats.json"
+    for episode in range(len(OBJECTS_WITH_LOGOS)):
+        stats = load_detailed_stats(json_path, episode)
+        sm_stats = stats["SM_1"]
+        rgba = np.array(sm_stats["raw_observations"][0]["rgba"])
+        depth = np.array(sm_stats["raw_observations"][0]["depth"])
+
+        on_obj = depth < 1.0
+        print(f"min_depth: {np.min(depth)}")
+        perc = on_obj.sum() / on_obj.size
+        print(f"perc: {100 * perc:.2f}%")
+
+        object_name = OBJECTS_WITH_LOGOS[episode]
         obj_dir = SNAPSHOT_DIR / object_name
         obj_dir.mkdir(parents=True, exist_ok=True)
 
@@ -262,32 +299,23 @@ def visualize_all(
     plot_histograms(maps, order=order)
     summarize_maps_stats(maps, order=order)
 
-
-object_name = "bowl"
+# save_snapshots_compositional()
+object_name = OBJECTS_WITH_LOGOS[1]
 obs = load_obs(object_name)
 rgba = obs["rgba"]
 depth = obs["depth"]
 rgb = rgba[:, :, :3]
 rgb = rgb / 255.0
 
-# gray = rgb_to_gray(rgb)
-# imshow(gray)
 
-# gx, gy, mag = sobel_filter(gray)
-# imshow(gx)
-# imshow(gy)
-# imshow(mag)
-
-
-# maps = salience_rgbd(rgb, depth, weight_scheme=None)
+maps = salience_rgbd(rgb, depth, weight_scheme=None)
 
 imshow(rgb)
-S = compute_saliency(obs)
+# S = compute_saliency(obs)
 # imshow(S)
 maps = salience_rgbd(rgb, depth)
-
-
 visualize_all(rgb, maps)  # full panel
+
 # Or call pieces:
 # visualize_maps_grid(maps, order=["L", "RG", "BY", "OR", "SR", "D", "S"])
 # visualize_overlays(rgb, maps, order=["L","RG","BY","OR","D","S"])

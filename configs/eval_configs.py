@@ -191,3 +191,17 @@ snapshots["experiment_args"].max_eval_steps = 1
 snapshots["logging_config"].run_name = "snapshots"
 set_view_finder_gsg(snapshots, OnObjectGsg)
 CONFIGS["snapshots"] = snapshots
+
+
+snapshots_compositional = copy.deepcopy(baseline)
+snapshots_compositional["experiment_args"].max_total_steps = 1
+snapshots_compositional["experiment_args"].max_eval_steps = 1
+snapshots_compositional["logging_config"].run_name = "snapshots_compositional"
+snapshots_compositional["dataset_args"] = make_dataset_args("compositional_objects")
+snapshots_compositional["eval_dataloader_args"] = make_dataloader_args(
+    ["002_cube_tbp_horz", "017_sphere_tbp_horz"],
+    [[0.0, 1.5, 0.0]],
+    [[0, 0, 0]],
+)
+set_view_finder_gsg(snapshots_compositional, None)
+CONFIGS["snapshots_compositional"] = snapshots_compositional
