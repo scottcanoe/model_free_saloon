@@ -100,13 +100,16 @@ def make_gifs(exp_dir: Path):
 
 
 if __name__ == "__main__":
-    experiment = "ycb_bio"
+    # experiment = "ycb_bio"
+    # config = load_config(experiment)
+    # enable_telemetry(config)
+    # run_config(config, clean=True)
+    # output_dir = Path(config["logging_config"].output_dir)
+    # run_name = config["logging_config"].run_name
+    # exp_dir = output_dir / run_name
+    # make_gifs(exp_dir)
 
+    experiment = "pretrain_standard"
     config = load_config(experiment)
-    enable_telemetry(config)
     run_config(config, clean=True)
 
-    output_dir = Path(config["logging_config"].output_dir)
-    run_name = config["logging_config"].run_name
-    exp_dir = output_dir / run_name
-    make_gifs(exp_dir)

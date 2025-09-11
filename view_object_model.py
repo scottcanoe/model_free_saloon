@@ -109,9 +109,10 @@ standard_model_path = project.paths.results / "pretrain_standard/pretrained/mode
 
 
 
-object_name = "mug"
+object_name = "potted_meat_can"
 # model_path = bio_model_path
-model_path = f"/Users/scott/tbp/projects/model_free_saloon/results/pretrain_standard/pretrain_standard-parallel_train_episode_{object_name}/pretrained/model.pt"
+model_path = standard_model_path
+# model_path = f"/Users/scott/tbp/projects/model_free_saloon/results/pretrain_standard/pretrain_standard-parallel_train_episode_{object_name}/pretrained/model.pt"
 
 lm_id = 0
 

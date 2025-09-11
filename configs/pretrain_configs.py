@@ -52,8 +52,7 @@ from tbp.monty.frameworks.models.evidence_matching.model import (
 )
 from tbp.monty.frameworks.models.motor_policies import NaiveScanPolicy
 from tbp.monty.frameworks.models.sensor_modules import (
-    DetailedLoggingSM,
-    HabitatSurfacePatchSM,
+    HabitatDistantPatchSM,
 )
 from tbp.monty.frameworks.models.sm_goal_state_generation import (
     OnObjectGsg,
@@ -90,6 +89,24 @@ MIN_EVAL_STEPS = 10
 
 train_rotations_all = train_rotations_all[:6]
 
+patch_config_no_fc = dict(
+    sensor_module_class=HabitatDistantPatchSM,
+    sensor_module_args=dict(
+        sensor_module_id="patch",
+        # TODO: would be nicer to just use lm.tolerances.keys() here
+        # but not sure how to easily do this.
+        features=[
+            "pose_vectors",
+            "pose_fully_defined",
+            "on_object",
+            "principal_curvatures_log",
+            "hsv",
+        ],
+        save_raw_obs=False,
+    ),
+)
+
+
 """
 --------------------------------------------------------------------------------
 YCB
@@ -107,7 +124,7 @@ pretrain_bio = dict(
     logging_config=PretrainLoggingConfig(
         output_dir=str(RESULTS_DIR),
         run_name="pretrain_bio",
-        ),
+    ),
     monty_config=PatchAndViewMontyConfig(
         monty_args=MontyArgs(num_exploratory_steps=500),
         sensor_module_configs=dict(
@@ -144,11 +161,16 @@ pretrain_bio = dict(
         rotations=train_rotations_all,
     ),
 )
+
 set_view_finder_gsg(pretrain_bio, OnObjectGsgBio)
 CONFIGS["pretrain_bio"] = pretrain_bio
 
 pretrain_standard = copy.deepcopy(pretrain_bio)
 pretrain_standard["logging_config"].run_name = "pretrain_standard"
+pretrain_standard["monty_config"].sensor_module_configs["sensor_module_0"] = (
+    patch_config_no_fc
+)
+set_view_finder_gsg(pretrain_standard, None)
 pretrain_standard["monty_config"].motor_system_config=MotorSystemConfigNaiveScanSpiral(
             motor_system_args=dict(
                 policy_class=NaiveScanPolicy,
