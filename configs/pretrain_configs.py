@@ -61,6 +61,7 @@ from tbp.monty.frameworks.models.sm_goal_state_generation import (
     OnObjectGsgRobustBackground,
     OnObjectGsgSpectralResidual,
     OnObjectGsgUniform,
+    OnObjectGsgIttiKoch,
 )
 from tbp.monty.simulators.habitat.configs import (
     FiveLMMountHabitatDatasetArgs,
@@ -178,3 +179,37 @@ pretrain_standard["monty_config"].motor_system_config=MotorSystemConfigNaiveScan
             )
 )
 CONFIGS["pretrain_standard"] = pretrain_standard
+
+########################################################
+# Pretraining on Different graph_delta_th              # 
+########################################################
+
+pretrain_bio_graph_delta_th_2mm = copy.deepcopy(pretrain_bio)
+pretrain_bio_graph_delta_th_2mm["logging_config"].run_name = "pretrain_bio_graph_delta_th_2mm"
+pretrain_bio_graph_delta_th_2mm["monty_config"].learning_module_configs["learning_module_0"]["learning_module_args"]["graph_delta_thresholds"]["patch"]["distance"] = 0.002
+CONFIGS["pretrain_bio_graph_delta_th_2mm"] = pretrain_bio_graph_delta_th_2mm
+
+pretrain_bio_graph_delta_th_5mm = copy.deepcopy(pretrain_bio)
+pretrain_bio_graph_delta_th_5mm["logging_config"].run_name = "pretrain_bio_graph_delta_th_5mm"
+pretrain_bio_graph_delta_th_5mm["monty_config"].learning_module_configs["learning_module_0"]["learning_module_args"]["graph_delta_thresholds"]["patch"]["distance"] = 0.005
+CONFIGS["pretrain_bio_graph_delta_th_5mm"] = pretrain_bio_graph_delta_th_5mm
+
+pretrain_bio_graph_delta_th_10mm = copy.deepcopy(pretrain_bio)
+pretrain_bio_graph_delta_th_10mm["logging_config"].run_name = "pretrain_bio_graph_delta_th_10mm"
+pretrain_bio_graph_delta_th_10mm["monty_config"].learning_module_configs["learning_module_0"]["learning_module_args"]["graph_delta_thresholds"]["patch"]["distance"] = 0.01
+CONFIGS["pretrain_bio_graph_delta_th_10mm"] = pretrain_bio_graph_delta_th_10mm
+
+
+########################################################
+# Pretraining on Minimum Barrier and Itti-Koch          # 
+########################################################
+
+pretrain_minimum_barrier = copy.deepcopy(pretrain_bio)
+pretrain_minimum_barrier["logging_config"].run_name = "pretrain_minimum_barrier"
+set_view_finder_gsg(pretrain_minimum_barrier, OnObjectGsgMinimumBarrier)
+CONFIGS["pretrain_minimum_barrier"] = pretrain_minimum_barrier
+
+pretrain_itti_koch = copy.deepcopy(pretrain_bio)
+pretrain_itti_koch["logging_config"].run_name = "pretrain_itti_koch"
+set_view_finder_gsg(pretrain_itti_koch, OnObjectGsgIttiKoch)
+CONFIGS["pretrain_itti_koch"] = pretrain_itti_koch

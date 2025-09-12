@@ -103,15 +103,21 @@ def load_object_model(
     return ObjectModel(points, features=feature_dict)
 
 
-bio_model_path = project.paths.results / "pretrain_bio/pretrained/model.pt"
-standard_model_path = project.paths.results / "pretrain_standard/pretrained/model.pt"
+model_name_and_paths = {
+    "bio": project.paths.results / "pretrain_bio/pretrained/model.pt",
+    "standard": project.paths.results / "pretrain_standard/pretrained/model.pt",
+    "bio_2mm": project.paths.results / "pretrain_bio_graph_delta_th_2mm/pretrained/model.pt",
+    "bio_5mm": project.paths.results / "pretrain_bio_graph_delta_th_5mm/pretrained/model.pt",
+    "bio_10mm": project.paths.results / "pretrain_bio_graph_delta_th_10mm/pretrained/model.pt",
+    "minimum_barrier": project.paths.results / "pretrain_minimum_barrier/pretrained/model.pt",
+    "itti_koch": project.paths.results / "pretrain_itti_koch/pretrained/model.pt",
+}
 
 # Configuration
-model_path = standard_model_path
+model_type = "itti_koch"
+model_path = model_name_and_paths[model_type]
 lm_id = 0
 
-# Determine model type for filename
-model_type = "bio" if model_path == bio_model_path else "standard"
 object_names = ['mug', 'bowl', 'potted_meat_can', 'spoon', 'strawberry', 
                 'mustard_bottle', 'dice', 'golf_ball', 'c_lego_duplo', 'banana']
 
